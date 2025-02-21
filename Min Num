@@ -1,0 +1,49 @@
+dosseg
+.model small
+.data
+msg db "Enter",10,13,"$"
+msgin db "invalid",10,13,"$"
+msgo db "the small is",10,13,"$"
+.code
+main:
+mov ax,@data
+mov ds,ax
+
+mov ah,9
+mov dx,offset msg 
+int 21h
+mov bl,39h
+rd:
+mov ah,1
+int 21h
+cmp al,13d
+je result
+cmp al,30h
+jb in
+cmp al,39h
+ja in
+
+cmp al,bl
+jae rd
+mov bl,al
+jmp rd
+
+in:
+mov ah,9
+mov dx,offset msgin
+int 21h
+jmp xt
+
+result:
+mov ah,9
+mov dx,offset msgo
+int 21h
+
+mov ah,2
+mov dl,bl
+int 21h
+
+xt:
+mov ah,4ch
+int 21h
+end main
