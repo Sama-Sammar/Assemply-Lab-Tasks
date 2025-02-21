@@ -1,0 +1,101 @@
+dosseg
+.model small
+
+.data
+msg1 db "Enter first number.",10,13,"$"        
+msg2 db "Enter second number.",10,13,"$"
+msgs db "Sum is equal to :",10,13,"$"
+msge db "Error! the sum is more than 255.",10,13,"$"
+num1 dw 0
+num2 dw 0
+sum dw 0
+
+.code
+main:
+mov ax,@data  
+mov ds,ax
+
+mov ah, 9
+mov dx, offset msg1
+int 21h
+
+mov bx,0
+agn1:
+mov ah,1   
+int 21h
+cmp al,13 
+je firstdone
+sub al,30h
+mov cl,al
+mov ax,bx
+mov bh,10
+mul bh
+mov bx,ax
+add bx,cx
+jmp agn1
+
+firstdone:
+mov [num1],bx 
+
+mov ah,9
+mov dx,offset msg2
+int 21h
+
+mov bx,0
+agn2:
+mov ah,1   
+int 21h
+cmp al,13  
+je seconddone
+sub al,30h
+mov cl,al
+mov ax,bx
+mov bh,10
+mul bh
+mov bx,ax
+add bx,cx
+jmp agn2
+
+seconddone:
+mov [num2],bx 
+
+mov ax,[num1]
+add ax,[num2]
+mov [sum],ax
+
+cmp ax,255
+jg error
+
+mov ah,9
+mov dx,offset msgs
+int 21h
+
+mov ax,[sum]
+mov cx,0
+mov bx, 10    
+
+ag1:
+mov dl,0
+div bx        
+push dx       
+inc cx        
+cmp ax,0
+jne ag1
+
+ag2:
+pop dx        
+add dl,30h
+mov ah,2 
+int 21h
+loop ag2
+jmp xt
+
+error:
+mov ah,9
+mov dx,offset msge
+int 21h
+
+xt:
+mov ah, 4Ch
+int 21h
+end main
