@@ -1,0 +1,63 @@
+dosseg
+.model small
+.data
+msg db "Enter a number",10,13,"$"
+msgLess db "Less than 55",10,13,"$"
+msgEqual db "Equal to 55",10,13,"$"
+msgGreater db "Greater than 55",10,13,"$"
+
+.code
+main:
+mov ax,@data
+mov ds,ax
+
+mov ah,9
+mov dx,offset msg
+int 21h
+
+mov ax,0
+mov bx,0
+mov cl,10
+
+ag:
+mov ah,1
+int 21h
+cmp al,13
+je check
+
+sub al,30h
+mov ch,al
+mov ax,bx
+mul cl
+mov bx,ax
+add bl,ch
+jmp ag
+
+check:
+cmp bx,55
+jb less
+je equal
+ja greater
+
+less:
+mov ah,9
+mov dx,offset msgLess
+int 21h
+jmp xt
+
+equal:
+mov ah,9
+mov dx,offset msgEqual
+int 21h
+jmp xt
+
+greater:
+mov ah,9
+mov dx,offset msgGreater
+int 21h
+jmp xt
+
+xt:
+mov ah,4ch
+int 21h
+end main
