@@ -1,0 +1,109 @@
+.model small
+.data
+msg1 db "Enter the value of X:", 10, 13, "$"
+msg2 db "Enter the value of C:", 10, 13, "$"
+msgError db "Error! Y is greater than 255.", 10, 13, "$"
+msgResult db "The value of Y is: $"
+
+X dw 0
+C dw 0
+con5 dw 5
+Y dw 0
+
+.code
+main:
+mov ax, @data
+mov ds, ax
+
+mov ah, 9
+mov dx, offset msg1
+int 21h
+
+mov ax, 0
+mov bx, 0
+mov cl, 10
+
+agn1:
+mov ah, 1
+int 21h
+cmp al, 13
+je firstDone
+
+sub al, 30h
+mov ch, al
+mov ax, bx
+mul cl
+mov bx, ax
+add bl, ch
+jmp agn1
+
+firstDone:
+mov [X], bx
+
+mov ah, 9
+mov dx, offset msg2
+int 21h
+
+mov ax, 0
+mov dx, 0
+mov cl, 10
+
+agn2:
+mov ah, 1
+int 21h
+cmp al, 13
+je secondDone
+
+sub al, 30h
+mov ch, al
+mov ax, dx
+mul cl
+mov dx, ax
+add dl, ch
+jmp agn2
+
+secondDone:
+mov [C], dx
+
+mov ax, [X]
+mov bx, [con5]
+mul bx
+add ax, [C]
+mov [Y], ax
+
+cmp ax, 255
+ja error
+
+mov ah, 9
+mov dx, offset msgResult
+int 21h
+
+mov ax,[Y]
+mov cx,0
+mov bx, 10    
+
+ag1:
+mov dx,0
+div bx        
+push dx       
+inc cx        
+cmp ax,0
+jne ag1
+
+ag2:
+pop dx        
+add dl,30h
+mov ah,2 
+int 21h
+loop ag2
+jmp xt
+
+error:
+mov ah, 9
+mov dx, offset msgError
+int 21h
+
+xt:
+mov ah, 4ch
+int 21h
+end main
