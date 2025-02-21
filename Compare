@@ -1,0 +1,86 @@
+dosseg
+.model small
+.data
+msg1 db "Enter first number A",10,13,"$"
+msg2 db "Enter second number B",10,13,"$"
+msgGreater db "A is greater than B.",10,13,"$"
+msgEqual db "A is equal to B.",10,13,"$"
+msgLess db "A is less than B.",10,13,"$"
+
+.code
+main:
+mov ax,@data
+mov ds,ax
+
+mov ah,9
+mov dx,offset msg1
+int 21h
+
+mov ax,0
+mov bx,0
+mov cl,10
+
+ag1:
+mov ah,1
+int 21h
+cmp al,13
+je firstDone
+sub al,30h
+mov ch,al
+mov ax,bx
+mul cl
+mov bx,ax
+add bl,ch
+jmp ag1
+
+firstDone:
+mov ah,9
+mov dx,offset msg2
+int 21h
+
+mov ax,0
+mov dx,0
+mov cl,10
+
+ag2:
+mov ah,1
+int 21h
+cmp al,13
+je secondDone
+
+sub al,30h
+mov ch,al
+mov ax,dx
+mul cl
+mov dx,ax
+add dl,ch
+jmp ag2
+
+secondDone:
+cmp bx,dx
+je equal
+jb less
+ja greater
+
+equal:
+mov ah,9
+mov dx,offset msgEqual
+int 21h
+jmp xt
+
+less:
+mov ah,9
+mov dx,offset msgLess
+int 21h
+jmp xt
+
+greater:
+mov ah,9
+mov dx,offset msgGreater
+int 21h
+jmp xt
+
+xt:
+mov ah,4ch
+int 21h
+end main 
