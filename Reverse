@@ -1,0 +1,48 @@
+dosseg
+.model small
+.data
+msg db "Enter a string to reverse:", 10, 13, "$"
+output_msg db "Reversed string:", 10, 13, "$"
+input db 100 dup(?)            
+
+.code
+main:
+
+mov ax, @data       
+mov ds, ax
+
+mov ah, 9
+mov dx, offset msg
+int 21h
+
+mov di, offset input     
+mov cx, 0                
+
+
+rd:
+mov ah, 1
+int 21h
+cmp al, 13              
+je done           
+mov [di], al            
+inc di                  
+inc cx                  
+jmp rd
+
+done:
+mov ah, 9
+mov dx, offset output_msg
+int 21h
+
+dec di                   
+print:
+mov dl, [di]             
+mov ah, 2
+int 21h
+dec di                 
+loop print       
+
+mov ah, 4ch
+int 21h
+
+end main
