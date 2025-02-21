@@ -1,0 +1,114 @@
+dosseg
+.model small
+.data
+msg db "Enter a string:",10,13,"$"
+output_msg db "String after replacing vowels:",10,13,"$"
+input db 100 dup('$')   
+counter db 0            
+
+.code
+main:
+
+mov ax, @data        
+mov ds, ax
+
+mov ah, 9
+mov dx, offset msg
+int 21h
+
+mov di, offset input
+
+rd:
+mov ah, 1           
+int 21h
+cmp al, 13           
+je replaceProcess
+mov [di], al         
+inc di               
+inc counter          
+cmp counter, 99      
+jl rd
+jmp replaceProcess
+
+replaceProcess:   
+mov si, offset input      
+mov di, offset input           
+
+next:
+mov al, [si]        
+cmp al, 13           
+je done
+
+cmp al, 'a'
+je replaceWithE_1
+cmp al, 'A'
+je replaceWithE_2
+
+cmp al, 'e'
+je replaceWithU_1
+cmp al, 'E'
+je replaceWithU_2
+
+cmp al, 'o'
+je replaceWithA_1
+cmp al, 'O'
+je replaceWithA_2
+
+cmp al, 'u'
+je replaceWithO_1
+cmp al, 'U'
+je replaceWithO_2
+
+jmp storeCharacter
+
+replaceWithE_1:
+mov al, 'e'
+jmp storeCharacter
+
+replaceWithE_2:
+mov al, 'E'
+jmp storeCharacter
+
+replaceWithU_1:
+mov al, 'u'
+jmp storeCharacter
+
+replaceWithU_2:
+mov al, 'U'
+jmp storeCharacter
+
+replaceWithA_1:
+mov al, 'a'
+jmp storeCharacter
+
+replaceWithA_2:
+mov al, 'A'
+jmp storeCharacter
+
+replaceWithO_1:
+mov al, 'o'
+jmp storeCharacter
+
+replaceWithO_2:
+mov al, 'O'
+jmp storeCharacter
+
+storeCharacter:
+mov [di], al         
+inc si               
+inc di
+jmp next
+
+done:
+mov ah, 9           
+mov dx, offset output_msg
+int 21h
+
+mov ah, 9           
+mov dx, offset input
+int 21h   
+
+mov ah, 4ch
+int 21h
+
+end main
