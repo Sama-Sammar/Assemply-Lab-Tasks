@@ -1,0 +1,47 @@
+dosseg
+.model small
+.stack 100
+.data
+.code
+main:
+mov ax, @data
+mov ds, ax
+
+mov ah, 0Fh    
+int 10h
+push ax
+
+mov ah, 00h    
+mov al, 12h
+int 10h
+
+mov dx, 190   
+mov cx, 320   
+ver_line:
+mov ah, 0Ch
+mov al, 01h   
+int 10h
+inc dx
+cmp dx, 290    
+jnz ver_line
+
+mov dx, 240  
+mov cx, 270    
+hor_line:
+mov ah, 0Ch
+mov al, 04h  
+int 10h
+inc cx
+cmp cx, 370   
+jnz hor_line
+
+mov ah, 1    
+int 21h
+
+pop ax        
+mov ah, 00h
+int 10h
+
+mov ah, 4Ch    
+int 21h
+end main
