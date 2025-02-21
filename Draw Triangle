@@ -1,0 +1,83 @@
+dosseg
+.model small
+.stack 100
+.data
+msgEnter db "Please enter a number (base & hight) of triangle: ", 10, 13, "$"
+num dw ? 
+.code
+main:
+mov ax, @data
+mov ds, ax
+
+mov ah, 9
+mov dx, offset msgEnter
+int 21h
+
+mov bx, 0
+rd:
+mov ah, 1   
+int 21h
+cmp al, 13 
+je endRd
+sub al, 30h
+mov cl, al
+mov ax, bx
+mov bh, 10
+mul bh
+mov bx, ax
+add bx, cx
+jmp rd
+
+endRd:
+mov [num], bx 
+
+mov ah, 0Fh
+int 10h
+push ax
+
+mov ah, 00h
+mov al, 12h
+int 10h
+
+mov cx, 100
+add num, 100
+mov dx, num
+mov ax, 0C04h
+
+draw_base: 
+int 10h
+inc cx
+cmp cx, num
+jb draw_base
+
+mov cx, 100
+mov dx, 100
+mov ax, 0C04h  
+
+draw_hight: 
+int 10h
+inc dx
+cmp dx, num
+jb draw_hight
+
+mov cx, 100
+mov dx, 100
+mov ax, 0C04h  
+
+draw_diagonal: 
+int 10h
+inc cx
+inc dx
+cmp dx, num
+jb draw_diagonal
+
+mov ah, 07h
+int 21h
+
+pop ax
+mov ah, 00h
+int 10h
+
+mov ax, 4C00h
+int 21h
+end main
