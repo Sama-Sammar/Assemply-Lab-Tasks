@@ -1,0 +1,79 @@
+dosseg
+.model small
+.stack 100
+.data
+row dw 240        
+column dw 320        
+.code
+main:
+mov ax,@data
+mov ds,ax
+
+mov ah,0Fh       
+int 10h
+push ax           
+
+mov ah,00h        
+mov al,12h        
+int 10h
+
+draw_dot:
+mov ah,0Ch
+mov al,02         
+mov cx,[column]
+mov dx,[row]
+int 10h
+jmp waitIn
+
+remove:
+mov ah,0Ch
+mov al,00         
+mov cx,[column]
+mov dx,[row]
+int 10h
+ret
+
+waitIn:
+mov ah,7h        
+int 21h           
+
+cmp al,'w'        
+je move_up
+cmp al,'a'        
+je move_left
+cmp al,'s'      
+je move_down
+cmp al,'d'       
+je move_right
+cmp al,13         
+je xt
+jmp waitIn     
+
+move_up:
+call remove     
+sub row,1
+jmp draw_dot
+
+move_left:
+call remove
+sub column,1
+jmp draw_dot
+
+move_down:
+call remove
+add row,1
+jmp draw_dot
+
+move_right:
+call remove   
+add column,1
+jmp draw_dot
+
+xt:
+pop ax            
+mov ah,00h
+int 10h           
+mov ax,4c00h     
+int 21h
+
+end main
