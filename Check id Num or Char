@@ -1,0 +1,38 @@
+dosseg
+.model small
+.data
+msg db "Enter:",10,13,'$"
+msgnum db 10,13,"Number",10,13,"$"
+msgchar db 10,13,"Character",10,13,"$"
+.code
+main:
+mov ax,@data
+mov ds,ax
+
+mov ah,9
+mov dx,offset msg
+int 21h
+
+mov ah,1
+int 21h
+
+mov bl,al
+cmp bl,30h
+jb itsChar
+cmp bl,39h
+ja itsChar
+
+mov ah,9
+mov dx,offset msgnum
+int 21h
+jmp xt
+
+itsChar:
+mov ah,9
+mov dx,offset msgChar
+int 21h
+
+xt:
+mov ah,4ch
+int 21h
+end main
