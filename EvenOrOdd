@@ -1,0 +1,49 @@
+dosseg
+.model small
+.data
+msg db "Enter number:",10,13,"$"
+msgE db "The number is even",10,13,"$"
+msgO db "The number is odd",10,13,"$"
+msgINVALID db "Invalid! enter again:",10,13,"$" 
+.code
+main:
+mov ax,@data
+mov ds,ax
+
+mov ah,9
+mov dx,offset msg
+int 21h
+
+mov ah,1
+int 21h
+
+mov bl,al
+cmp bl,30h
+jb invalid
+cmp bl,39h
+ja invalid
+sub bl,30h
+and bl,1
+jz evennum
+
+mov ah,9
+mov dx,offset msgO
+int 21h
+jmp xt
+
+evennum:
+mov ah,9
+mov dx,offset msgE
+int 21h
+jmp xt
+
+invalid:
+mov ah,9
+mov dx,offset msgINVALID
+int 21h
+
+xt:
+mov ah,4ch
+int 21h
+
+end main
