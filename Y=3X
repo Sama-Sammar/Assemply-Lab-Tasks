@@ -1,0 +1,139 @@
+dosseg
+.model small
+.data
+msgMin db "Enter the min x: ", "$"
+msgMax db "Enter the max x: ", "$"
+x db "The value of x: ", "$"
+y db " The value of y=3x: ", "$"
+msgError db "Error in value!", 10, 13, "$"
+minX db ?
+maxX db ?
+num db ?
+
+.code
+main:
+mov ax, @data
+mov ds, ax
+
+mov ah, 9
+mov dx, offset msgMin
+int 21h
+
+call read
+
+cmp num, 80d
+ja error
+
+mov al, num
+mov minX, al
+
+mov ah, 9
+mov dx, offset msgMax
+int 21h
+
+call read
+
+cmp num, 80d
+ja error
+
+mov al, num
+mov maxX, al
+mov bl, minX
+
+again:
+call print
+inc minX
+mov bl, minX
+cmp bl, maxX
+jbe again
+jmp xt
+
+error:
+mov ah, 9
+mov dx, offset msgError
+int 21h
+jmp xt
+
+print:
+mov ah, 9
+mov dx, offset x
+int 21h
+
+mov num, bl
+
+call write
+
+mov ah, 9
+mov dx, offset y
+int 21h
+
+mov cl, 3d
+mov al, num
+mul cl
+mov num, al
+
+call write
+
+mov ah, 2
+mov dl, 10
+int 21h
+mov dl, 13
+int 21h
+ret
+
+read:
+mov ax, 0
+mov bx, 0
+mov cx, 0
+mov num, 0
+
+rd:
+mov ah, 1
+int 21h
+cmp al, 13
+je done
+sub al, 30h
+mov bh, al
+mov al, 10d
+mul cl
+add al, bh
+mov cl, al
+mov num, al
+jmp rd
+
+done:
+ret
+
+write:
+mov ax, 0
+mov bx, 0
+mov cx, 0
+mov dx, 0
+mov bl, 10
+mov al, num
+mov cl, 0
+
+convert:
+div bl
+push ax
+inc cl
+cmp al, 0
+mov ah, 0
+jnz convert
+
+result:
+pop ax
+mov dl, ah
+add dl, 30h
+mov ah, 2
+int 21h
+dec cl
+cmp cl, 0
+jnz result
+ret
+
+xt:
+mov ah, 4Ch
+int 21h
+
+end main
