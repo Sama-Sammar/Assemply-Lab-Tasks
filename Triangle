@@ -1,0 +1,106 @@
+dosseg
+.model small
+.data
+msg1 db "Enter the base B of the triangle:",10,13,"$"
+msg2 db "Enter the height H of the triangle: ",10,13,"$"
+msgArea db "The area of the triangle is: ","$"
+msgError db "Error! The area more than 255.","$"
+num1 dw 0
+num2 dw 0
+area dw 0
+.code
+main:
+
+mov ax, @data
+mov ds, ax
+
+mov ah, 9
+mov dx, offset msg1
+int 21h
+
+mov ax, 0
+mov bx, 0
+mov cl, 10
+
+agn1:
+mov ah, 1
+int 21h
+cmp al, 13
+je firstDoneB
+sub al, 30h
+mov ch, al
+mov ax, bx
+mul cl
+mov bx, ax
+add bl, ch
+jmp agn1
+
+firstDoneB:
+mov [num1],bx
+
+mov ah, 9
+mov dx, offset msg2
+int 21h
+
+mov ax, 0
+mov dx, 0
+mov cl, 10
+
+agn2:
+mov ah, 1
+int 21h
+cmp al, 13
+je secondDoneH
+sub al, 30h
+mov ch, al
+mov ax, dx
+mul cl
+mov dx, ax
+add dl, ch
+jmp agn2
+
+secondDoneH:
+mov [num2],dx
+
+mov ax, [num1]
+mov bx, [num2]
+mul bx
+shr ax, 1  
+mov [area],ax
+
+cmp ax, 255
+ja error
+
+mov ah, 9
+mov dx, offset msgArea
+int 21h
+
+mov ax,[area]
+mov cx,0
+mov bx, 10    
+
+ag1:
+mov dx,0
+div bx        
+push dx       
+inc cx        
+cmp ax,0
+jne ag1
+
+ag2:
+pop dx        
+add dl,30h
+mov ah,2 
+int 21h
+loop ag2
+jmp xt
+
+error:
+mov ah, 9
+mov dx, offset msgError
+int 21h
+
+xt:
+mov ah, 4ch
+int 21h
+end main
