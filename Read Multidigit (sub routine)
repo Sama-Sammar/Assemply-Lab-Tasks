@@ -1,0 +1,90 @@
+dosseg
+.model small
+.data
+msg db "Please enter a number (Press Enter to finish): $"
+result db "The number you entered is: $"
+msgError db "Error! Number more than 255. $"
+stng db 100 dup (?)
+num dw 0
+
+.code
+main:
+mov ax, @data
+mov ds, ax
+
+mov dx, offset msg
+mov ah, 9
+int 21h
+
+call read_multi_digit
+
+cmp num, 255
+jbe printResult
+
+mov dx, offset msgError
+mov ah, 9
+int 21h
+jmp xt
+
+printResult:
+mov dx, offset result
+mov ah, 9
+int 21h
+
+call write_multi_digit
+
+mov dl, 0Dh
+mov ah, 2
+int 21h
+mov dl, 0Ah
+mov ah, 2
+int 21h
+
+xt:
+mov ah, 4Ch
+int 21h
+
+read_multi_digit:
+mov di, offset stng
+mov bx, 0
+
+rd:
+mov ah, 1
+int 21h
+cmp al, 13
+jz end_rd
+sub al, 30h
+mov cl, al
+mov ax, bx
+mov bx, 10
+mul bx
+add ax, cx
+mov bx, ax
+jmp rd
+
+end_rd:
+mov num, bx
+ret
+
+write_multi_digit:
+mov ax, num
+mov cx, 0
+mov bx, 10
+
+convert:
+mov dx, 0
+div bx
+push dx
+inc cx
+test ax, ax
+jnz convert
+
+print:
+pop dx
+add dl, 30h
+mov ah, 2
+int 21h
+loop print
+ret
+
+end main
