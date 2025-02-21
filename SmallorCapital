@@ -1,0 +1,42 @@
+dosseg
+.model small
+.data
+msg1 db "Enter a character:",10,13,"$"
+msg2 db "The character is small",10,13,"$"
+msg3 db "The character is capital",10,13,"$"
+.code
+main:
+mov ax,@data
+mov ds,ax
+
+mov ah,9
+mov dx,offset msg1
+int 21h
+
+mov ah,1
+int 21h
+
+cmp al,"a"
+jb check_if_capital
+cmp al,"z"
+ja check_if_capital
+
+mov ah,9
+mov dx,offset msg2
+int 21h
+jmp xt
+
+check_if_capital:
+cmp al,"A"
+jb xt
+cmp al,"Z"
+ja xt
+
+mov ah,9
+mov dx,offset msg3
+int 21h
+
+xt:
+mov ah,4ch
+int 21h
+end main
