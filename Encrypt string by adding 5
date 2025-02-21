@@ -1,0 +1,57 @@
+dosseg
+.model small
+.data
+msg db "Enter a string to encrypt:", 10, 13, "$"
+output_msg db "Encrypted string:", 10, 13, "$"
+input db 100 dup(?)                
+
+.code
+main:
+mov ax, @data        
+mov ds, ax
+
+mov ah, 9
+mov dx, offset msg
+int 21h
+
+mov di, offset input
+
+rd:
+mov ah, 1           
+int 21h
+cmp al, 13          
+je done
+
+cmp al,' '
+je skip
+
+add al, 5 
+
+skip:           
+mov [di], al         
+inc di               
+jmp rd       
+
+done:
+mov [di], 13         
+mov di, offset input 
+
+mov ah, 9           
+mov dx, offset output_msg
+int 21h
+
+print:
+mov dl, [di]         
+cmp dl, 13           
+je xt
+
+mov ah, 2
+int 21h             
+inc di              
+jmp print
+
+xt:
+mov ah, 4ch
+int 21h
+
+end main
