@@ -1,0 +1,103 @@
+dosseg
+.model small
+.data
+msg1 db "Enter the value of X",10,13,"$"
+msg2 db "Enter the value of C",10,13,"$"
+msgEqual db "Y is equal to 100.",10,13,"$"
+msgLess db "Y is less than 100.",10,13,"$"
+msgGreater db "Y is greater than 100.",10,13,"$"
+
+X dw 0
+C dw 0
+con5 dw 5
+Y dw 0
+con100 dw 100
+.code
+main:
+mov ax,@data
+mov ds,ax
+
+mov ah,9
+mov dx,offset msg1
+int 21h
+
+mov ax,0
+mov bx,0
+mov cl,10
+
+ag1:
+mov ah,1
+int 21h
+cmp al,13
+je firstDone
+
+sub al,30h
+mov ch,al
+mov ax,bx
+mul cl
+mov bx,ax
+add bl,ch
+jmp ag1
+
+firstDone:
+mov [X],bx
+mov ah,9
+mov dx,offset msg2
+int 21h
+
+mov ax,0
+mov dx,0
+mov cl,10
+
+ag2:
+mov ah,1
+int 21h
+cmp al,13
+je secondDone
+
+sub al,30h
+mov ch,al
+mov ax,dx
+mul cl
+mov dx,ax
+add dl,ch
+jmp ag2
+
+secondDone:
+mov [C],dx
+
+mov ax,[X]
+mov bx,[con5]
+mul bx
+add ax,[C]
+
+mov [Y],ax
+
+mov cx,[con100]
+cmp [Y],cx
+je equal
+jb less
+ja greater
+
+equal:
+mov ah,9
+mov dx,offset msgEqual
+int 21h
+jmp xt
+
+less:
+mov ah,9
+mov dx,offset msgLess
+int 21h
+jmp xt
+
+greater:
+mov ah,9
+mov dx,offset msgGreater
+int 21h
+jmp xt
+
+xt:
+mov ah,4ch
+int 21h
+end main
